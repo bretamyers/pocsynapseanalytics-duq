@@ -1,0 +1,30 @@
+{
+	"name": "DS_Parquet_adlsenterprisebam",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_ADLS_adlsenterprisebam",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"FileName": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": {
+					"value": "@dataset().FileName",
+					"type": "Expression"
+				},
+				"folderPath": "tpcds/SourceFiles_100GB_parquet_nonpartitioned/catalog_sales",
+				"fileSystem": "tpc"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

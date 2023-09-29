@@ -1,0 +1,22 @@
+{
+	"name": "Parquet_eastus",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureDataLakeStorage2_eastus",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Parquet",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "part-00001-tid-8723999091086348913-8d9d286e-ddae-4638-9ed1-d54cc7bc7f04-7-1-c000.snappy.parquet",
+				"folderPath": "tpcds/SourceFiles_100GB_parquet_nonpartitioned/catalog_sales/",
+				"fileSystem": "tpc"
+			},
+			"compressionCodec": "snappy"
+		},
+		"schema": []
+	},
+	"type": "Microsoft.Synapse/workspaces/datasets"
+}

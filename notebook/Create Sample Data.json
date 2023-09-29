@@ -1,0 +1,238 @@
+{
+	"name": "Create Sample Data",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "small",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"runAsWorkspaceSystemIdentity": false,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "052f4e39-ea1b-44b4-8634-8ecbccbcd1d8"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"synapse_widget": {
+				"version": "0.1",
+				"state": {
+					"403cc713-5b32-445a-b348-0d86d86b0ca7": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "bret",
+										"1": "1"
+									},
+									{
+										"0": "nicole",
+										"1": "2"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "colA",
+										"type": "string"
+									},
+									{
+										"key": "1",
+										"name": "colB",
+										"type": "bigint"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala"
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [
+										"0"
+									],
+									"seriesFieldKeys": [
+										"1"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					},
+					"6bfefe9b-867c-49cb-94ac-bbb5593d3b7f": {
+						"type": "Synapse.DataFrame",
+						"sync_state": {
+							"table": {
+								"rows": [
+									{
+										"0": "1"
+									}
+								],
+								"schema": [
+									{
+										"key": "0",
+										"name": "a",
+										"type": "int"
+									}
+								],
+								"truncated": false
+							},
+							"isSummary": false,
+							"language": "scala"
+						},
+						"persist_state": {
+							"view": {
+								"type": "details",
+								"chartOptions": {
+									"chartType": "bar",
+									"aggregationType": "sum",
+									"categoryFieldKeys": [],
+									"seriesFieldKeys": [
+										"0"
+									],
+									"isStacked": false
+								}
+							}
+						}
+					}
+				}
+			},
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/18bc4af3-8099-4e70-86d8-eba06dd5bac8/resourceGroups/PoC-Synapse-Analytics/providers/Microsoft.Synapse/workspaces/pocsynapseanalytics-duq/bigDataPools/small",
+				"name": "small",
+				"type": "Spark",
+				"endpoint": "https://pocsynapseanalytics-duq.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/small",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net",
+					"authHeader": null
+				},
+				"sparkVersion": "3.3",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"extraHeader": null
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"metadata": {
+					"collapsed": false
+				},
+				"source": [
+					"data = [('bret', 1), ('nicole', 2)]\r\n",
+					"\r\n",
+					"df = spark.createDataFrame(data, schema=['colA', 'colB'])\r\n",
+					"\r\n",
+					"display(df)"
+				],
+				"execution_count": 4
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"df.write.mode('overwrite').parquet('abfss://mycontainer@adlsprotected.dfs.core.windows.net/testParquet')\r\n",
+					"# df.write.parquet('https://adlsprotected.blob.core.windows.net/mycontainer/testParquetHTTPS/')"
+				],
+				"execution_count": 8
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"mssparkutils.fs.ls('abfss://mycontainer@adlsprotected.dfs.core.windows.net/testParquet')"
+				],
+				"execution_count": 10
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"collapsed": false
+				},
+				"source": [
+					"df = spark.read.parquet('abfss://mycontainer@adlsprotected.dfs.core.windows.net/testPipelineParquet')\r\n",
+					"\r\n",
+					"display(df)"
+				],
+				"execution_count": 7
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					},
+					"microsoft": {
+						"language": "python"
+					}
+				},
+				"source": [
+					"%%pyspark\r\n",
+					"df = spark.read.load('abfss://tpc@adlsenterprisebam.dfs.core.windows.net/tpcds/SourceFiles_001GB_parquet/call_center/part-00000-tid-1465069220109069400-09388c59-ccac-4f39-ba83-b5d11ba4ffe6-1015-1-c000.snappy.parquet', format='parquet')\r\n",
+					"display(df.limit(10))"
+				]
+			}
+		]
+	}
+}

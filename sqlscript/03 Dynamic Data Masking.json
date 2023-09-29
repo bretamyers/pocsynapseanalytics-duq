@@ -1,0 +1,20 @@
+{
+	"name": "03 Dynamic Data Masking",
+	"properties": {
+		"folder": {
+			"name": "Dedicated SQL Pool Security"
+		},
+		"content": {
+			"query": "/* Use Case: \n    Mask & Unmask the EmailAddress and BirthDate columns of the \n    Customer table to DataAnalystSFO\n*/\n\n-- Create 2 users for use case demonstration!\nCREATE USER DataAnalystSFO WITHOUT LOGIN;\nCREATE USER DataAnalystGlobal WITHOUT LOGIN;\n--SELECT * FROM sys.sysusers WHERE name in ('DataAnalystGlobal', 'DataAnalystSFO');\n\n-- Grant SELECT permission to 'DataAnalystSFO' on the Customer table\nGRANT SELECT ON Sample.DimCustomer TO DataAnalystSFO;  \n\n-- Run a query as 'DataAnalystSFO' to verify the access \nEXECUTE AS USER = 'DataAnalystSFO';  \nSELECT TOP 100 * FROM Sample.DimCustomer;\n\n-- Optionally, Check for existing Dynamic Data Masking applied on columns\nSELECT c.name, tbl.name as table_name, c.is_masked, c.masking_function  \nFROM sys.masked_columns AS c  \nJOIN sys.tables AS tbl\n    ON c.[object_id] = tbl.[object_id]  \nWHERE is_masked = 1\n    AND tbl.name = 'DimCustomer';\n\n-- Mask 'EmailAddress' and 'BirthDate' columns of Customer table\nALTER TABLE Sample.DimCustomer\nALTER COLUMN EmailAddress ADD MASKED WITH (FUNCTION = 'email()');\nGO\nALTER TABLE Sample.DimCustomer\nALTER COLUMN BirthDate ADD MASKED WITH (FUNCTION = 'default()');\nGO\n\n\n\n-- Validate the data for DataAnalystSFO\nEXECUTE AS USER = 'DataAnalystSFO';  \nSELECT TOP 100 * FROM Sample.DimCustomer;\n\n-- Perform the Unmask operation\nGRANT UNMASK TO DataAnalystSFO;\nEXECUTE AS USER = 'DataAnalystSFO';  \nSELECT TOP 100 * FROM Sample.DimCustomer;\n\n/*\nCLEAN UP:\nDROP USER DataAnalystSFO;\nDROP USER DataAnalystGlobal;\nALTER TABLE Sample.DimCustomer ALTER COLUMN EmailAddress DROP MASKED;\nALTER TABLE Sample.DimCustomer ALTER COLUMN BirthDate DROP MASKED;\n*/",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "DataWarehouse",
+				"poolName": "DataWarehouse"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

@@ -1,0 +1,163 @@
+{
+	"name": "Pipeline 2",
+	"properties": {
+		"activities": [
+			{
+				"name": "Copy data1",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Copy data1_copy1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ParquetSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "ParquetReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlDWSink",
+						"allowPolyBase": true,
+						"polyBaseSettings": {
+							"rejectValue": 0,
+							"rejectType": "value",
+							"useTypeDefault": true
+						},
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "DS_Parquet_adlsenterprisebam",
+						"type": "DatasetReference",
+						"parameters": {
+							"FileName": "part-00005-tid-8723999091086348913-8d9d286e-ddae-4638-9ed1-d54cc7bc7f04-11-1-c000.snappy.parquet"
+						}
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_Synapse_Managed_Identity",
+						"type": "DatasetReference",
+						"parameters": {
+							"ServerName": "pocsynapseanalytics-duq.sql.azuresynapse.net",
+							"DatabaseName": "DataWarehouse"
+						}
+					}
+				]
+			},
+			{
+				"name": "Copy data1_copy1",
+				"type": "Copy",
+				"dependsOn": [
+					{
+						"activity": "Lookup1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ParquetSource",
+						"storeSettings": {
+							"type": "AzureBlobFSReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "ParquetReadSettings"
+						}
+					},
+					"sink": {
+						"type": "SqlDWSink",
+						"allowPolyBase": true,
+						"polyBaseSettings": {
+							"rejectValue": 0,
+							"rejectType": "value",
+							"useTypeDefault": true
+						},
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false
+				},
+				"inputs": [
+					{
+						"referenceName": "Parquet_eastus",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "DS_Synapse_Managed_Identity",
+						"type": "DatasetReference",
+						"parameters": {
+							"ServerName": "pocsynapseanalytics-duq.sql.azuresynapse.net",
+							"DatabaseName": "DataWarehouse"
+						}
+					}
+				]
+			},
+			{
+				"name": "Lookup1",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlDWSource",
+						"sqlReaderQuery": "INSERT INTO [dbo].[test]([cs_sold_date_sk], [cs_sold_time_sk], [cs_ship_date_sk], [cs_bill_customer_sk], [cs_bill_cdemo_sk], [cs_bill_hdemo_sk], [cs_bill_addr_sk], [cs_ship_customer_sk], [cs_ship_cdemo_sk], [cs_ship_hdemo_sk], [cs_ship_addr_sk], [cs_call_center_sk], [cs_catalog_page_sk], [cs_ship_mode_sk], [cs_warehouse_sk], [cs_item_sk], [cs_promo_sk], [cs_order_number], [cs_quantity], [cs_wholesale_cost], [cs_list_price], [cs_sales_price], [cs_ext_discount_amt], [cs_ext_sales_price], [cs_ext_wholesale_cost], [cs_ext_list_price], [cs_ext_tax], [cs_coupon_amt], [cs_ext_ship_cost], [cs_net_paid], [cs_net_paid_inc_tax], [cs_net_paid_inc_ship], [cs_net_paid_inc_ship_tax], [cs_net_profit]) SELECT [cs_sold_date_sk], [cs_sold_time_sk], [cs_ship_date_sk], [cs_bill_customer_sk], [cs_bill_cdemo_sk], [cs_bill_hdemo_sk], [cs_bill_addr_sk], [cs_ship_customer_sk], [cs_ship_cdemo_sk], [cs_ship_hdemo_sk], [cs_ship_addr_sk], [cs_call_center_sk], [cs_catalog_page_sk], [cs_ship_mode_sk], [cs_warehouse_sk], [cs_item_sk], [cs_promo_sk], [cs_order_number], [cs_quantity], [cs_wholesale_cost], [cs_list_price], [cs_sales_price], [cs_ext_discount_amt], [cs_ext_sales_price], [cs_ext_wholesale_cost], [cs_ext_list_price], [cs_ext_tax], [cs_coupon_amt], [cs_ext_ship_cost], [cs_net_paid], [cs_net_paid_inc_tax], [cs_net_paid_inc_ship], [cs_net_paid_inc_ship_tax], [cs_net_profit] FROM [ADFCopyGeneratedExternalTable_3f6cfe38-6aba-4b2a-a640-a607e244abcc] OPTION (LABEL='ADF Activity ID: 2b77caa8-ab61-404b-95a4-d95d1d89f771')\n;\nSELECT 1 AS a;",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_Synapse_Managed_Identity",
+						"type": "DatasetReference",
+						"parameters": {
+							"ServerName": "pocsynapseanalytics-duq.sql.azuresynapse.net",
+							"DatabaseName": "DataWarehouse"
+						}
+					},
+					"firstRowOnly": false
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-09-06T21:01:50Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

@@ -1,0 +1,20 @@
+{
+	"name": "01 Row Level Security",
+	"properties": {
+		"folder": {
+			"name": "Dedicated SQL Pool Security"
+		},
+		"content": {
+			"query": "/* Use Case: \n    DataAnalystGlobal should have all data access and\n    DataAnalystSFO users should have limited access to\n    rows belonging to GeographyKey 360 in Sample.DimCustomer! \nDocs: https://docs.microsoft.com/en-us/sql/relational-databases/security/row-level-security?toc=%2Fazure%2Fsynapse-analytics%2Fsql-data-warehouse%2Ftoc.json&bc=%2Fazure%2Fsynapse-analytics%2Fsql-data-warehouse%2Fbreadcrumb%2Ftoc.json&view=sql-server-ver16\n*/\n\n--Create 2 users for use case demonstration!\nCREATE USER DataAnalystSFO WITHOUT LOGIN;\nCREATE USER DataAnalystGlobal WITHOUT LOGIN;\n--SELECT * FROM sys.sysusers WHERE name in ('DataAnalystGlobal', 'DataAnalystSFO');\n\n\n/* Security Predicate - Inline table-valued function to determine if the Analyst executing the query belongs to the right geography! \nThe function returns 1 when a row in the GeographyKey column is the same as the user executing the query \n(@GeographyKey = USER_NAME()) or if the user executing the query is the DataAnalystGlobal user (USER_NAME() = 'DataAnalystGlobal').\n*/\n\nGO\nCREATE SCHEMA Security\nGO\nCREATE FUNCTION Security.fn_securitypredicate(@GeographyKey AS sysname)  \n    RETURNS TABLE  \nWITH SCHEMABINDING  \nAS  \n    RETURN SELECT 1 AS fn_securitypredicate_result\n    WHERE (USER_NAME() = 'DataAnalystSFO' and @GeographyKey = 360) OR USER_NAME() = 'DataAnalystGlobal'\nGO\n\n-- Define security policy that adds the filter predicate to the DimCustomer table to filter rows based on login name.\nCREATE SECURITY POLICY SalesFilter  \nADD FILTER PREDICATE Security.fn_securitypredicate (GeographyKey)\nON Sample.DimCustomer\nWITH (STATE = ON);\n\n-- Allow SELECT permissions to the Table.\nGRANT SELECT ON Sample.DimCustomer TO DataAnalystGlobal, DataAnalystSFO;\n\n-- Validate the access!\n-- Only one GeographyKey values\nEXECUTE AS USER = 'DataAnalystSFO'\nSELECT TOP 100 * FROM Sample.DimCustomer;\n\n-- Multiple GeographyKey values\nEXECUTE AS USER = 'DataAnalystGlobal';  \nSELECT TOP 100 * FROM Sample.DimCustomer;\n\n/*\nCLEAN UP:\nALTER SECURITY POLICY SalesFilter WITH (STATE = OFF);\nDROP SECURITY POLICY SalesFilter;\nDROP FUNCTION Security.fn_securitypredicate;\nDROP SCHEMA Security;\nDROP USER DataAnalystSFO;\nDROP USER DataAnalystGlobal;\n*/",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "DataWarehouse",
+				"poolName": "DataWarehouse"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

@@ -1,0 +1,20 @@
+{
+	"name": "02 Column Level Security",
+	"properties": {
+		"folder": {
+			"name": "Dedicated SQL Pool Security"
+		},
+		"content": {
+			"query": "/* Use Case: \n    DataAnalystSFO should not have access to birthdate and phone columns\n    on the Customer table\n*/\n\n-- Create 2 users for use case demonstration!\nCREATE USER DataAnalystSFO WITHOUT LOGIN;\nCREATE USER DataAnalystGlobal WITHOUT LOGIN;\n--SELECT * FROM sys.sysusers WHERE name in ('DataAnalystGlobal', 'DataAnalystSFO');\n\n-- If users already existed, revoke access to Sample.DimCustomer \nREVOKE SELECT ON Sample.DimCustomer FROM DataAnalystSFO, DataAnalystGlobal;\n\n-- Allow DataAnalystGlobal access to all columns on Sample.DimCustomer Table.\nGRANT SELECT ON Sample.DimCustomer TO DataAnalystGlobal;\n\n-- Allow DataAnalystSFO access to a subset of columns on Sample.DimCustomer Table.\nGRANT SELECT ON Sample.DimCustomer(\n[CustomerKey],[GeographyKey],[CustomerAlternateKey],[Title],[FirstName],[MiddleName],[LastName],[NameStyle]\n--,[BirthDate],[Phone]\n,[MaritalStatus],[Suffix],[Gender],[EmailAddress],[YearlyIncome],[TotalChildren],[NumberChildrenAtHome],[EnglishEducation]\n,[SpanishEducation],[FrenchEducation],[EnglishOccupation],[SpanishOccupation],[FrenchOccupation],[HouseOwnerFlag]\n,[NumberCarsOwned],[AddressLine1],[AddressLine2],[DateFirstPurchase],[CommuteDistance]\n) TO DataAnalystSFO;\n\n-- Check whether DataAnalystSFO has select access to the all columns\nEXECUTE AS USER ='DataAnalystSFO';\nselect TOP 100 * from Sample.DimCustomer;\n\n-- Check whether DataAnalystSFO has select access to the other columns\nEXECUTE AS USER ='DataAnalystSFO';\nselect TOP 100\n[CustomerKey],[GeographyKey],[CustomerAlternateKey],[Title],[FirstName],[MiddleName],[LastName],[NameStyle]\n--,[BirthDate],[Phone]\n,[MaritalStatus],[Suffix],[Gender],[EmailAddress],[YearlyIncome],[TotalChildren],[NumberChildrenAtHome],[EnglishEducation]\n,[SpanishEducation],[FrenchEducation],[EnglishOccupation],[SpanishOccupation],[FrenchOccupation],[HouseOwnerFlag]\n,[NumberCarsOwned],[AddressLine1],[AddressLine2],[DateFirstPurchase],[CommuteDistance]\n from Sample.DimCustomer;\n\n-- Check whether DataAnalystGlobal has select access to the all columns\nEXECUTE AS USER ='DataAnalystGlobal';\nselect TOP 100 * from Sample.DimCustomer;\n\n/*\nCLEAN UP:\nDROP USER DataAnalystSFO;\nDROP USER DataAnalystGlobal;\n*/",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "DataWarehouse",
+				"poolName": "DataWarehouse"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

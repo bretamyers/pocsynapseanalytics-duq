@@ -1,0 +1,40 @@
+{
+	"name": "PL_Load_Lookup",
+	"properties": {
+		"activities": [
+			{
+				"name": "Lookup1",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlDWSource",
+						"sqlReaderQuery": "\nIF NOT EXISTS (SELECT * FROM sys.database_scoped_credentials WHERE [name] = 'AzureStorageCredential_MSI')\n\tCREATE DATABASE SCOPED CREDENTIAL AzureStorageCredential_MSI\n\tWITH\n\t\tIDENTITY = 'Managed Identity'\n\t;\n\n\nIF OBJECT_ID('dbo.ADFCopyGeneratedExternalTable_3f6cfe38-6aba-4b2a-a640-a607e244abcc', 'U') IS NOT NULL\n\tDROP EXTERNAL TABLE [dbo].[ADFCopyGeneratedExternalTable_3f6cfe38-6aba-4b2a-a640-a607e244abcc]\n;\n\nIF EXISTS (SELECT 1 FROM sys.external_data_sources WHERE [name] = 'ADFCopyGeneratedDataSource_f08ac7a1-6088-4f72-a617-91da095f3e42')\n\tDROP EXTERNAL DATA SOURCE [ADFCopyGeneratedDataSource_f08ac7a1-6088-4f72-a617-91da095f3e42]\n;\n\nCREATE EXTERNAL DATA SOURCE [ADFCopyGeneratedDataSource_f08ac7a1-6088-4f72-a617-91da095f3e42]               \nWITH (                  TYPE = HADOOP,                      \nLOCATION ='abfss://tpc@pocsynapseadlsduqprivate.dfs.core.windows.net/',                    \nCREDENTIAL = AzureStorageCredential_MSI )\n;\n\n\nCREATE EXTERNAL TABLE [dbo].[ADFCopyGeneratedExternalTable_3f6cfe38-6aba-4b2a-a640-a607e244abcc] ([cs_sold_date_sk] int NULL,[cs_sold_time_sk] int NULL,[cs_ship_date_sk] int NULL,[cs_bill_customer_sk] int NULL,[cs_bill_cdemo_sk] int NULL,[cs_bill_hdemo_sk] int NULL,[cs_bill_addr_sk] int NULL,[cs_ship_customer_sk] int NULL,[cs_ship_cdemo_sk] int NULL,[cs_ship_hdemo_sk] int NULL,[cs_ship_addr_sk] int NULL,[cs_call_center_sk] int NULL,[cs_catalog_page_sk] int NULL,[cs_ship_mode_sk] int NULL,[cs_warehouse_sk] int NULL,[cs_item_sk] int NULL,[cs_promo_sk] int NULL,[cs_order_number] bigint NULL,[cs_quantity] int NULL,[cs_wholesale_cost] decimal(38,18) NULL,[cs_list_price] decimal(38,18) NULL,[cs_sales_price] decimal(38,18) NULL,[cs_ext_discount_amt] decimal(38,18) NULL,[cs_ext_sales_price] decimal(38,18) NULL,[cs_ext_wholesale_cost] decimal(38,18) NULL,[cs_ext_list_price] decimal(38,18) NULL,[cs_ext_tax] decimal(38,18) NULL,[cs_coupon_amt] decimal(38,18) NULL,[cs_ext_ship_cost] decimal(38,18) NULL,[cs_net_paid] decimal(38,18) NULL,[cs_net_paid_inc_tax] decimal(38,18) NULL,[cs_net_paid_inc_ship] decimal(38,18) NULL,[cs_net_paid_inc_ship_tax] decimal(38,18) NULL,[cs_net_profit] decimal(38,18) NULL)              \nWITH (LOCATION='tpcds/SourceFiles_100GB_parquet_nonpartitioned/catalog_sales_new/part-00001-tid-8723999091086348913-8d9d286e-ddae-4638-9ed1-d54cc7bc7f04-7-1-c000.snappy.parquet'\n, DATA_SOURCE = [ADFCopyGeneratedDataSource_f08ac7a1-6088-4f72-a617-91da095f3e42]\n, FILE_FORMAT = [ADFCopyGeneratedFileFormat_7425df72-a21a-48e9-94d7-de9e1af2b984]                    \n, REJECT_TYPE=value, REJECT_VALUE=0)\n;\n\n\nINSERT INTO [dbo].[test]([cs_sold_date_sk], [cs_sold_time_sk], [cs_ship_date_sk], [cs_bill_customer_sk], [cs_bill_cdemo_sk], [cs_bill_hdemo_sk], [cs_bill_addr_sk], [cs_ship_customer_sk], [cs_ship_cdemo_sk], [cs_ship_hdemo_sk], [cs_ship_addr_sk], [cs_call_center_sk], [cs_catalog_page_sk], [cs_ship_mode_sk], [cs_warehouse_sk], [cs_item_sk], [cs_promo_sk], [cs_order_number], [cs_quantity], [cs_wholesale_cost], [cs_list_price], [cs_sales_price], [cs_ext_discount_amt], [cs_ext_sales_price], [cs_ext_wholesale_cost], [cs_ext_list_price], [cs_ext_tax], [cs_coupon_amt], [cs_ext_ship_cost], [cs_net_paid], [cs_net_paid_inc_tax], [cs_net_paid_inc_ship], [cs_net_paid_inc_ship_tax], [cs_net_profit]) SELECT [cs_sold_date_sk], [cs_sold_time_sk], [cs_ship_date_sk], [cs_bill_customer_sk], [cs_bill_cdemo_sk], [cs_bill_hdemo_sk], [cs_bill_addr_sk], [cs_ship_customer_sk], [cs_ship_cdemo_sk], [cs_ship_hdemo_sk], [cs_ship_addr_sk], [cs_call_center_sk], [cs_catalog_page_sk], [cs_ship_mode_sk], [cs_warehouse_sk], [cs_item_sk], [cs_promo_sk], [cs_order_number], [cs_quantity], [cs_wholesale_cost], [cs_list_price], [cs_sales_price], [cs_ext_discount_amt], [cs_ext_sales_price], [cs_ext_wholesale_cost], [cs_ext_list_price], [cs_ext_tax], [cs_coupon_amt], [cs_ext_ship_cost], [cs_net_paid], [cs_net_paid_inc_tax], [cs_net_paid_inc_ship], [cs_net_paid_inc_ship_tax], [cs_net_profit] FROM [ADFCopyGeneratedExternalTable_3f6cfe38-6aba-4b2a-a640-a607e244abcc] OPTION (LABEL='ADF Activity ID: 2b77caa8-ab61-404b-95a4-d95d1d89f771')\n;\n\nSELECT 1 AS a\n;\n",
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_Synapse_Managed_Identity",
+						"type": "DatasetReference",
+						"parameters": {
+							"ServerName": "pocsynapseanalytics-duq.sql.azuresynapse.net",
+							"DatabaseName": "DataWarehouse"
+						}
+					},
+					"firstRowOnly": false
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2023-09-11T15:44:35Z"
+	},
+	"type": "Microsoft.Synapse/workspaces/pipelines"
+}

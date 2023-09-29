@@ -1,0 +1,17 @@
+{
+	"name": "Sample Copy Into with Auto Create",
+	"properties": {
+		"content": {
+			"query": "\nIF OBJECT_ID('dbo.myCOPYDemoTable', 'U') IS NOT NULL\n    DROP TABLE dbo.myCOPYDemoTable\nGO\n\nCOPY INTO dbo.myCOPYDemoTable\nFROM 'https://adlsprotected.dfs.core.windows.net/mycontainer/testPipelineParquet/*.parquet'\nWITH (\n    FILE_TYPE = 'PARQUET',\n    CREDENTIAL = (IDENTITY = 'Managed Identity'),\n    AUTO_CREATE_TABLE = 'ON'\n)\nGO\n\nSELECT * \nFROM dbo.myCOPYDemoTable\nGO\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "DataWarehouse",
+				"poolName": "DataWarehouse"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

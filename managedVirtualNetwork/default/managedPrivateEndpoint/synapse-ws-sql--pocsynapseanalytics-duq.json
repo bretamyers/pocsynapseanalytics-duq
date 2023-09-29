@@ -1,0 +1,10 @@
+{
+	"name": "synapse-ws-sql--pocsynapseanalytics-duq",
+	"properties": {
+		"privateLinkResourceId": "/subscriptions/18bc4af3-8099-4e70-86d8-eba06dd5bac8/resourceGroups/PoC-Synapse-Analytics/providers/Microsoft.Synapse/workspaces/pocsynapseanalytics-duq",
+		"groupId": "sql",
+		"fqdns": [
+			"pocsynapseanalytics-duq.c9eb3ea9-75ad-47fd-bfc8-dd0fb265c2ed.sql.azuresynapse.net"
+		]
+	}
+}

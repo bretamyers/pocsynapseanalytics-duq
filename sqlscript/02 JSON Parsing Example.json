@@ -1,0 +1,20 @@
+{
+	"name": "02 JSON Parsing Example",
+	"properties": {
+		"folder": {
+			"name": "Dedicated SQL Pool Features"
+		},
+		"content": {
+			"query": "/* Use Case: \n    Using Materialized Views in Synapse Dedicated SQL Pools\n    to improve performance.\n*/\n\nSET ANSI_NULLS ON\nGO\nSET QUOTED_IDENTIFIER ON\nGO\n\n-- First, create table to store JSON data\nCREATE TABLE [dbo].[User_Data]\n( \n\t[jsondata] [nvarchar](4000)  NULL\n)\nWITH\n(\n\tDISTRIBUTION = ROUND_ROBIN,\n\tCLUSTERED COLUMNSTORE INDEX\n)\nGO\n\n-- Then, use COPY INTO statement to load the data from the lake into SQL pool table\nCOPY INTO dbo.User_Data\n(jsonData 1)\nFROM 'https://pocsynapseadlsduq.dfs.core.windows.net/data/user_data.json.gz'\nWITH\n(\n\t\tFILE_TYPE = 'CSV'\n\t\t,fieldterminator ='0x0b'\n        ,fieldquote = '0x0b'\n\t\t,COMPRESSION = 'Gzip'\n)\n--END\nGO\n\n-- Select to verify data loaded correctly\nSELECT TOP 100 * FROM dbo.User_Data\nGO\n\n --Use the JSON Extractor to parse the complex JSON data \nSELECT   TOP 10\n       JSON_VALUE( jsondata,'$.name') AS Name, \n       JSON_VALUE( jsonData,'$.username') AS Username, \n       JSON_VALUE( jsonData,'$.email') AS Email, \n       JSON_VALUE( jsonData,'$.address.streetA') AS Street1,\n       JSON_VALUE( jsonData,'$.address.streetB') AS Street2,\n       JSON_VALUE( jsonData,'$.address.city') AS City\nFROM dbo.[user_data] \nWHERE\n    ISJSON(jsonData) > 0 \n\n-- The query below fetches JSON data and filters it by username.\n-- Note, this extracts specific columns in a structured format\nSELECT   \n       JSON_VALUE( jsondata,'$.name') AS Name, \n       JSON_VALUE( jsonData,'$.username') AS Username, \n       JSON_VALUE( jsonData,'$.email') AS Email, \n       JSON_VALUE( jsonData,'$.address.streetA') AS Street1,\n       JSON_VALUE( jsonData,'$.address.streetB') AS Street2,\n       JSON_VALUE( jsonData,'$.address.city') AS City\nFROM dbo.[user_data] \nWHERE    \n    ISJSON(jsonData) > 0  AND\n    JSON_VALUE( jsonData,'$.username')='Jeffrey77'\n\n\n-- This example show s you how to deal with JSON arrays\nSELECT   \n       JSON_VALUE( jsondata,'$.name') AS Name, \n       JSON_VALUE( jsonData,'$.username') AS Username, \n       JSON_VALUE( jsonData,'$.email') AS Email, \n       JSON_VALUE( jsonData,'$.address.streetA') AS Street1,\n       JSON_VALUE( jsonData,'$.address.streetB') AS Street2,\n       JSON_VALUE( jsonData,'$.address.city') AS City\n       ,accountHistory.amount, accountHistory.name\nFROM dbo.[user_data]\n    CROSS APPLY \n        OPENJSON(jsondata,'lax $.accountHistory') \n        WITH ( amount nvarchar(500) '$.amount' , name nvarchar(500) )\n        AS accountHistory\nWHERE\n    ISJSON(jsonData) > 0  AND\n    JSON_VALUE( jsonData,'$.username')='Jeffrey77'\n       \n/*\nCLEAN UP:\nDROP TABLE [dbo].[User_Data];\n*/",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "DataWarehouse",
+				"poolName": "DataWarehouse"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
