@@ -1,0 +1,7 @@
+{
+	"name": "pe_CosmosDbMongoDbApi863_subresource_mongodb",
+	"properties": {
+		"privateLinkResourceId": "/subscriptions/18bc4af3-8099-4e70-86d8-eba06dd5bac8/resourceGroups/RG-Sandbox/providers/Microsoft.DocumentDB/databaseAccounts/cosmosdbbamserverlessmongo",
+		"groupId": "MongoDB"
+	}
+}
