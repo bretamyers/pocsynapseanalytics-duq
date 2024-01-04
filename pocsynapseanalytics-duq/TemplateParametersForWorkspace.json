@@ -1,0 +1,51 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"workspaceName": {
+			"value": "pocsynapseanalytics-duq"
+		},
+		"AzureDataLakeStorage2_eastus_accountKey": {
+			"value": ""
+		},
+		"LS_ADLS_adlsenterprisebam_accountKey": {
+			"value": ""
+		},
+		"LS_CosmosDbMongoDb_SampleDB_connectionString": {
+			"value": ""
+		},
+		"LS_CosmosDbMongoDb_SampleDB_account": {
+			"value": "cosmosdbbamserverlessmongo"
+		},
+		"LS_Synapse_Managed_Identity_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=@{linkedService().ServerName};Initial Catalog=@{linkedService().DatabaseName}"
+		},
+		"adlsenterprisebam_accountKey": {
+			"value": ""
+		},
+		"pocsynapseanalytics-duq-WorkspaceDefaultSqlServer_connectionString": {
+			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:pocsynapseanalytics-duq.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
+		},
+		"AzureDataLakeStorage1_properties_typeProperties_url": {
+			"value": "https://adlsprotected.dfs.core.windows.net/"
+		},
+		"AzureDataLakeStorage2_eastus_properties_typeProperties_url": {
+			"value": "https://pocsynapseadlsduq.dfs.core.windows.net/"
+		},
+		"LS_ADLS_Private_properties_typeProperties_url": {
+			"value": "https://pocsynapseadlsduqprivate.dfs.core.windows.net/"
+		},
+		"LS_ADLS_adlsenterprisebam_properties_typeProperties_url": {
+			"value": "https://adlsenterprisebam.dfs.core.windows.net/"
+		},
+		"LS_CosmosDbMongoDb_SampleDB_properties_typeProperties_database": {
+			"value": "SampleDB"
+		},
+		"adlsenterprisebam_properties_typeProperties_url": {
+			"value": "https://adlsenterprisebam.dfs.core.windows.net/"
+		},
+		"pocsynapseanalytics-duq-WorkspaceDefaultStorage_properties_typeProperties_url": {
+			"value": "https://pocsynapseadlsduq.dfs.core.windows.net"
+		}
+	}
+}
