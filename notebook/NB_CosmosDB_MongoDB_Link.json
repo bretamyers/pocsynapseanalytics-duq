@@ -1,0 +1,85 @@
+{
+	"name": "NB_CosmosDB_MongoDB_Link",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "small",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "acf4bf8e-d025-46f0-9c28-a18b1033f2bc"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "Synapse PySpark"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/18bc4af3-8099-4e70-86d8-eba06dd5bac8/resourceGroups/PoC-Synapse-Analytics/providers/Microsoft.Synapse/workspaces/pocsynapseanalytics-duq/bigDataPools/small",
+				"name": "small",
+				"type": "Spark",
+				"endpoint": "https://pocsynapseanalytics-duq.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/small",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.3",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"# To select a preferred list of regions in a multi-region Azure Cosmos DB account, add .option(\"spark.cosmos.preferredRegions\", \"<Region1>,<Region2>\")\r\n",
+					"\r\n",
+					"df = spark.read.format(\"cosmos.olap\")\\\r\n",
+					"    .option(\"spark.synapse.linkedService\", \"LS_CosmosDbMongoDb_SampleDB\")\\\r\n",
+					"    .option(\"spark.cosmos.container\", \"SampleCollection\")\\\r\n",
+					"    .load()\r\n",
+					"\r\n",
+					"display(df)"
+				],
+				"execution_count": 6
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					""
+				],
+				"execution_count": null
+			}
+		]
+	}
+}
