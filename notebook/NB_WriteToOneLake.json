@@ -1,0 +1,96 @@
+{
+	"name": "NB_WriteToOneLake",
+	"properties": {
+		"nbformat": 4,
+		"nbformat_minor": 2,
+		"bigDataPool": {
+			"referenceName": "small",
+			"type": "BigDataPoolReference"
+		},
+		"sessionProperties": {
+			"driverMemory": "28g",
+			"driverCores": 4,
+			"executorMemory": "28g",
+			"executorCores": 4,
+			"numExecutors": 2,
+			"conf": {
+				"spark.dynamicAllocation.enabled": "false",
+				"spark.dynamicAllocation.minExecutors": "2",
+				"spark.dynamicAllocation.maxExecutors": "2",
+				"spark.autotune.trackingId": "a11d7690-ae1c-481b-a134-6425f5cf0a04"
+			}
+		},
+		"metadata": {
+			"saveOutput": true,
+			"enableDebugMode": false,
+			"kernelspec": {
+				"name": "synapse_pyspark",
+				"display_name": "python"
+			},
+			"language_info": {
+				"name": "python"
+			},
+			"a365ComputeOptions": {
+				"id": "/subscriptions/18bc4af3-8099-4e70-86d8-eba06dd5bac8/resourceGroups/PoC-Synapse-Analytics/providers/Microsoft.Synapse/workspaces/pocsynapseanalytics-duq/bigDataPools/small",
+				"name": "small",
+				"type": "Spark",
+				"endpoint": "https://pocsynapseanalytics-duq.dev.azuresynapse.net/livyApi/versions/2019-11-01-preview/sparkPools/small",
+				"auth": {
+					"type": "AAD",
+					"authResource": "https://dev.azuresynapse.net"
+				},
+				"sparkVersion": "3.3",
+				"nodeCount": 3,
+				"cores": 4,
+				"memory": 28,
+				"automaticScaleJobs": false
+			},
+			"sessionKeepAliveTimeout": 30
+		},
+		"cells": [
+			{
+				"cell_type": "code",
+				"source": [
+					"# https://docs.databricks.com/en/_extras/notebooks/source/adls-gen2-service-principal.html\r\n",
+					"# https://github.com/Azure/MachineLearningNotebooks/blob/master/how-to-use-azureml/azure-synapse/spark_session_on_synapse_spark_pool.ipynb\r\n",
+					"\r\n",
+					"tenand_id = 'bc86ea3f-6b11-4021-8f98-f426fbb3b717'\r\n",
+					"client_id = '411bebba-36dc-429d-b27b-87005a23cff3'\r\n",
+					"service_credential = 'POz8Q~hT6wf~xfP_sQ_tI_Crs0aqCOigQJQ3hbfv'\r\n",
+					"\r\n",
+					"sc._jsc.hadoopConfiguration().set(\"fs.azure.account.auth.type.onelake.dfs.fabric.microsoft.com\",\"OAuth\")\r\n",
+					"sc._jsc.hadoopConfiguration().set(\"fs.azure.account.oauth.provider.type.onelake.dfs.fabric.microsoft.com\", \"org.apache.hadoop.fs.azurebfs.oauth2.ClientCredsTokenProvider\")\r\n",
+					"sc._jsc.hadoopConfiguration().set(\"fs.azure.account.oauth2.client.id.onelake.dfs.fabric.microsoft.com\", client_id)\r\n",
+					"sc._jsc.hadoopConfiguration().set(\"fs.azure.account.oauth2.client.secret.onelake.dfs.fabric.microsoft.com\", service_credential)\r\n",
+					"sc._jsc.hadoopConfiguration().set(\"fs.azure.account.oauth2.client.endpoint.onelake.dfs.fabric.microsoft.com\", f\"https://login.microsoftonline.com/{tenand_id}/oauth2/token\")\r\n",
+					""
+				],
+				"execution_count": null
+			},
+			{
+				"cell_type": "code",
+				"metadata": {
+					"jupyter": {
+						"source_hidden": false,
+						"outputs_hidden": false
+					},
+					"nteract": {
+						"transient": {
+							"deleting": false
+						}
+					}
+				},
+				"source": [
+					"workspace_name = 'WS_Demo'\r\n",
+					"lakehouse_name = 'LH_Sample'\r\n",
+					"folder = 'FromSynapseSparkManagedVNet'\r\n",
+					"\r\n",
+					"df = spark.createDataFrame(data=[(1,1)], schema=['colA','colB'])\r\n",
+					"\r\n",
+					"df.write.format('delta').mode('overwrite').save(f'abfss://{workspace_name}@onelake.dfs.fabric.microsoft.com/{lakehouse_name}.Lakehouse/Files/{folder}')"
+				],
+				"execution_count": null
+			}
+		]
+	}
+}
